@@ -18,20 +18,14 @@ var CHRONOLY = function() { return {
     },
 
     init: function() {
-        air.trace('init');
-        
-        window.htmlLoader.authenticate = false;  
-        window.nativeWindow.addEventListener(air.Event.CLOSING, this.cleanupAndQuit);
-        this.setUpUpdater();
-
-        this.initSysTray();
+        console.info('init');
         
         // Add onClick handlers
-        document.getElementById('settings_link').addEventListener("click", this.showSettings);
-        document.getElementById('about_link').addEventListener("click", this.showAbout);
-        document.getElementById('help_link').addEventListener("click", this.showHelp);
-        document.getElementById('settings_help_link').addEventListener("click", this.showHelp);
-        document.getElementById('close_settings_link').addEventListener("click", this.hideSettings);
+        // document.getElementById('settings_link').addEventListener("click", this.showSettings);
+        // document.getElementById('about_link').addEventListener("click", this.showAbout);
+        // document.getElementById('help_link').addEventListener("click", this.showHelp);
+        // document.getElementById('settings_help_link').addEventListener("click", this.showHelp);
+        // document.getElementById('close_settings_link').addEventListener("click", this.hideSettings);
         
         // Set the date boxes
         this.dateToSelects(new Date());
@@ -50,89 +44,35 @@ var CHRONOLY = function() { return {
                 xhr.setRequestHeader("Authorization", "Basic " +  Base64.encode( CHRONOLY.api_token + ":X" ));
             },
             error: function(xhr, status_text, err) {
-                air.trace('Error: ' + status_text);
+                console.error('Error: ' + status_text);
                 CHRONOLY.hideLoading();
                 if ( status_text.match('timeout') || xhr.status == 404 ) {
                     CHRONOLY.showSettings('There was a problem accessing Basecamp. Check your Basecamp url and try again.');
                 } else if (xhr.status == 401) {
-                    air.trace('Bad credentials');
+                    console.error('Bad credentials');
                     CHRONOLY.showSettings('There was a problem with your Basecamp api token.');
                 } else {
-                    air.Introspector.Console.log(xhr);
+                    console.log(xhr);
                 }
             }
         });
         
-        var need_settings = this.checkSettings();
+        // var need_settings = this.checkSettings();
         
-        if ( need_settings == 1 ) {
-            air.trace('need settings');
-            // If we didn't pull any data out of the store give them the settings screen
-            this.showSettings();
-        } else {
-            this.initialRequest();
-        }
+        // if ( need_settings == 1 ) {
+        //     air.trace('need settings');
+        //     // If we didn't pull any data out of the store give them the settings screen
+        //     this.showSettings();
+        // } else {
+        //     this.initialRequest();
+        // }
         
         // Periodically get new time reports (just in case time was added through the Basecamp ui)
         // FIXME: This is a weird dependency. getTimeReports is in reports, but reports needs CHRONOLY
-        setInterval( this.reporter.getTimeReports, this.hoursToMS(0.5) );
+        // setInterval( this.reporter.getTimeReports, this.hoursToMS(0.5) );
         
         // Catch the date rolling over so we can update it for the user
-        this.initDateWatcher();
-    },
-    
-    initSysTray: function() {
-        var app = air.NativeApplication;
-        if (! (app.supportsSystemTrayIcon || app.supportsDockIcon) ) { 
-            return;
-        }
-        
-        var icon = app.nativeApplication.icon;
-        
-        var iconLoadComplete = function(event) { 
-            icon.bitmaps = [event.target.content.bitmapData]; 
-        }
-        
-        var iconLoad = new air.Loader();
-        iconLoad.contentLoaderInfo.addEventListener(air.Event.COMPLETE,iconLoadComplete);
-        iconLoad.load(new air.URLRequest("icons/16/clock.png"));
-        
-        icon.menu = this.buildIconMenu();
-        
-        if (app.supportsSystemTrayIcon) {
-            icon.tooltip = "Chronoly"; // only supported by systray
-            icon.addEventListener("click", this.toggleMinimize);
-        }
-        
-        //// untested, but ought to work
-        if (app.supportsDockIcon) {
-            app.nativeApplication.addEventListener("invoke", this.toggleMinimize);
-        }
-    },
-    
-    buildIconMenu: function() {
-        var iconMenu    = new air.NativeMenu();
-        var exitCommand = iconMenu.addItem(new air.NativeMenuItem("Exit"));
-        exitCommand.addEventListener(air.Event.SELECT,function(event){
-            air.NativeApplication.nativeApplication.exit();
-        });
-        return iconMenu;
-    },
-    
-    toggleMinimize: function() {
-        if (this.minimized) {
-            window.nativeWindow.visible = true;
-            this.minimized = false;
-        } else {
-            window.nativeWindow.visible = false;
-            this.minimized = true;
-        }
-    },
-    
-    setUpUpdater: function() {
-        var appUpdater = new runtime.air.update.ApplicationUpdaterUI(); 
-        appUpdater.configurationFile = new air.File("app:/updateFramework/updateConfig.xml"); 
-        appUpdater.initialize();
+        // this.initDateWatcher();
     },
     
     initialRequest: function() {
