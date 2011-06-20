@@ -21,11 +21,11 @@ var CHRONOLY = function() { return {
         console.info('init');
         
         // Add onClick handlers
-        // document.getElementById('settings_link').addEventListener("click", this.showSettings);
-        // document.getElementById('about_link').addEventListener("click", this.showAbout);
-        // document.getElementById('help_link').addEventListener("click", this.showHelp);
-        // document.getElementById('settings_help_link').addEventListener("click", this.showHelp);
-        // document.getElementById('close_settings_link').addEventListener("click", this.hideSettings);
+        $('#settings_link').click(this.showSettings);
+        $('#about_link').click(this.showAbout);
+        $('#help_link').click(this.showHelp);
+        $('#settings_help_link').click(this.showHelp);
+        $('#close_settings_link').click(this.hideSettings);
         
         // Set the date boxes
         this.dateToSelects(new Date());
@@ -57,15 +57,15 @@ var CHRONOLY = function() { return {
             }
         });
         
-        // var need_settings = this.checkSettings();
+        var need_settings = this.checkSettings();
         
-        // if ( need_settings == 1 ) {
-        //     air.trace('need settings');
-        //     // If we didn't pull any data out of the store give them the settings screen
-        //     this.showSettings();
-        // } else {
-        //     this.initialRequest();
-        // }
+        if ( need_settings == 1 ) {
+            console.info('need settings');
+            // If we didn't pull any data out of the store give them the settings screen
+            this.showSettings();
+        } else {
+            this.initialRequest();
+        }
         
         // Periodically get new time reports (just in case time was added through the Basecamp ui)
         // FIXME: This is a weird dependency. getTimeReports is in reports, but reports needs CHRONOLY
@@ -91,18 +91,16 @@ var CHRONOLY = function() { return {
     },
     
     checkSettings: function() {
-        var api_token_bytes    = air.EncryptedLocalStore.getItem("api_token");
-        var basecamp_url_bytes = air.EncryptedLocalStore.getItem("basecamp_url");
+        console.info('checking settings');
+
+        this.api_token    = localStorage.getItem("api_token");
+        this.basecamp_url = localStorage.getItem("basecamp_url");
         
-        // Pull user data out of store
-        if ( api_token_bytes != null )
-            this.api_token = api_token_bytes.toString();
-        if ( basecamp_url_bytes != null ) {
-            this.basecamp_url = basecamp_url_bytes.toString();
+        if ( basecamp_url != null ) {
             this.base_url = 'https://' + this.basecamp_url + '.basecamphq.com';
         }
         
-        if ( this.api_token == '' || this.basecamp_url == '' )
+        if ( this.api_token == null || this.basecamp_url == null )
             return 1;
         return 0;
     },
@@ -166,13 +164,9 @@ var CHRONOLY = function() { return {
         $.ajax({
             url: this.base_url + '/me.xml',
             success: function(data) {
-                var bytes = new air.ByteArray(); 
-                bytes.writeUTFBytes(CHRONOLY.api_token); 
-                air.EncryptedLocalStore.setItem("api_token", bytes);
-                
-                bytes = new air.ByteArray();
-                bytes.writeUTFBytes(CHRONOLY.basecamp_url); 
-                air.EncryptedLocalStore.setItem("basecamp_url", bytes);
+                // Set valid settings
+                localStorage.setItem('api_token', CHRONOLY.api_token);
+                localStorage.setItem('basecamp_url', CHRONOLY.basecamp_url);
                 
                 CHRONOLY.user_id = $(data).find('person > id').text();
                 

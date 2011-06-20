@@ -3,7 +3,7 @@
   "version": "0.7",
   "description": "A Basecamp time tracking app.",
   "icons": { "128": "icon_128.png" },
-  "permissions": ["http://*.basecamphq.com/"],
+  "permissions": ["https://*.basecamphq.com/"],
   "browser_action": {
     "default_title": "",
     "default_icon": "icon_19.png",
