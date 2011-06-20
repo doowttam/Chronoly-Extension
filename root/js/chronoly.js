@@ -202,37 +202,11 @@ var CHRONOLY = function() { return {
     },
     
     showHelp: function() {
-        CHRONOLY.openWindow("/root/help.html", 500, 400);
+        window.open("/root/help.html");
     },
     
     showAbout: function() {
-        CHRONOLY.openWindow("/root/about.html", 320, 210);
-    },
-    
-    openWindow: function(path, height, width) {
-        var options = new air.NativeWindowInitOptions(); 
-        
-        var xPos = window.screenX + 100;
-        var yPos = window.screenY + 100;
-        
-        var windowBounds = new air.Rectangle(xPos, yPos, height, width); 
-        newHTMLLoader = air.HTMLLoader.createRootWindow(true, options, true, windowBounds);
-        newHTMLLoader.load(new air.URLRequest(path));
-    },
-    
-    closeAllWindows: function() {
-        $.each(air.NativeApplication.nativeApplication.openedWindows, function( index, openedWindow ) {
-            openedWindow.close();
-        });
-    },
-    
-    cleanupSysTray: function() {
-        air.NativeApplication.nativeApplication.icon.bitmaps = []; 
-    },
-    
-    cleanupAndQuit: function() {
-        CHRONOLY.closeAllWindows();
-        CHRONOLY.cleanupSysTray();
+        window.open("/root/about.html");
     },
     
     generateDateHint: function(compareToDate) {
