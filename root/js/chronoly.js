@@ -10,7 +10,7 @@ var CHRONOLY = function() { return {
     basecamp_url: '',
     base_url:     '',
     user_id:      null,
-    minimized:    false,
+    needSettings: false,    
 
     CONSTANTS: {
         MSINADAY: 86400000,
@@ -19,21 +19,6 @@ var CHRONOLY = function() { return {
 
     init: function() {
         console.info('init');
-        
-        // Add onClick handlers
-        $('#settings_link').click(this.showSettings);
-        $('#about_link').click(this.showAbout);
-        $('#help_link').click(this.showHelp);
-        $('#settings_help_link').click(this.showHelp);
-        $('#close_settings_link').click(this.hideSettings);
-        
-        // Set the date boxes
-        this.dateToSelects(new Date());
-        
-        // Add onChanges to the selects
-        $('#date_month').change(this.updateDateHint);
-        $('#date_day').change(this.updateDateHint);
-        $('#date_year').change(this.updateDateHint);
         
         // Set up the defaults for ajax
         $.ajaxSetup({
@@ -57,12 +42,10 @@ var CHRONOLY = function() { return {
             }
         });
         
-        var need_settings = this.checkSettings();
-        
-        if ( need_settings == 1 ) {
+        if ( this.checkSettings() == 1 ) {
             console.info('need settings');
             // If we didn't pull any data out of the store give them the settings screen
-            this.showSettings();
+            this.needSettings = true;
         } else {
             this.initialRequest();
         }
@@ -82,9 +65,6 @@ var CHRONOLY = function() { return {
         $.get( this.base_url + '/me.xml', function(data) {
             CHRONOLY.user_id = $(data).find('person > id').text();
             
-            $('#splash-screen').css('display', 'none');
-            $('#main-window').css('display', 'block');
-            
             CHRONOLY.reporter.getTimeReports();
             CHRONOLY.timeRecorder.getProjectList();
         });
@@ -96,29 +76,13 @@ var CHRONOLY = function() { return {
         this.api_token    = localStorage.getItem("api_token");
         this.basecamp_url = localStorage.getItem("basecamp_url");
         
-        if ( basecamp_url != null ) {
+        if ( this.basecamp_url != null ) {
             this.base_url = 'https://' + this.basecamp_url + '.basecamphq.com';
         }
         
         if ( this.api_token == null || this.basecamp_url == null )
             return 1;
         return 0;
-    },
-    
-    showSettings: function(msg) {
-        // Hack because the onclick eventhandlers pass in 
-        // the event object as a parameter.
-        if ( typeof msg != 'string' )
-            msg = '';
-        
-        $('#settings_msg').text(msg);
-        $('#basecamp_url').val(CHRONOLY.basecamp_url);
-        $('#api_token').val(CHRONOLY.api_token);
-        $('.settings').css('display', 'block');
-    },
-    
-    hideSettings: function() {
-        $('.settings').css('display', 'none');
     },
     
     // Convert a date to YYYYMMDD format
