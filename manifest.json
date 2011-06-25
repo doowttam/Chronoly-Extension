@@ -4,7 +4,6 @@
   "description": "A Basecamp time tracking app.",
   "icons": { "128": "icon_128.png" },
   "permissions": ["https://*.basecamphq.com/"],
-  "background_page": "root/background.html",
   "app": {
       "launch": {
           "local_path": "root/Chronoly.html",
