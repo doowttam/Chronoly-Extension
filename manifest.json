@@ -8,7 +8,7 @@
       "launch": {
           "local_path": "root/Chronoly.html",
           "container": "panel",
-          "height": 500,
+          "height": 550,
           "width": 450
       }
   }
