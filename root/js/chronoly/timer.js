@@ -33,7 +33,7 @@ CHRONOLY.timer = function() { return {
         if ( $('#time_input').val() == '' ) {
             $('#time_input').val(0.1);
         } else {
-            var newTime = this.getTimeSpent() + 0.1;
+            var newTime = CHRONOLY.timer.getTimeSpent() + 0.1;
             $('#time_input').val(newTime.toFixed(1));
         }
     },
